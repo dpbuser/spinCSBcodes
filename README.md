@@ -1,4 +1,4 @@
-This repository contains the scripts used to generate the main results in Figures 1 and 2 in the paper "Quantum Converse Symmetry Breaking".
+This repository contains the scripts used to generate the main results in Figures 2 and 3 in the paper "Quantum Converse Symmetry Breaking".
 
 The data for Figure 1a was produced using spin_r_vs_delta_gpu_parallel.py. To run this one needs an Nvidia GPU that supports the cudatoolkit package. If one wishes to create
 a new environment, the following command should install all dependencies: "conda create -n csb_env python numpy matplotlib scipy mpi4py numba cudatoolkit cupy". You will also need to
