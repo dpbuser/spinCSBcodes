@@ -5,7 +5,7 @@ a new environment, the following command should install all dependencies: "conda
 run "pip install qutip" in the environment. If you are having troubles with cupy, be sure to check the version of cudatoolkit is compatible with the current software version running on your GPU.
 
 The script spin_r_vs_delta_gpu_parallel.py creates an empty 100x100 grid called r_vals, each of which has an address in the format [i,j]. Each address is converted into a single integer number
-using job_address = i*100 + j. All 10,000 job_addresses are then distributed equally among all availble processes, each of which is assumed to have access to a unique GPU.
+using job_address = i * 100 + j. All 10,000 job_addresses are then distributed equally among all availble processes, each of which is assumed to have access to a unique GPU.
 Upon recieving their assigned job_addresses, each process will calculate the steady state of Eq. 4, with the only change between each job_address being the entries of the 
 coupling matrix C defined in Eq. 6. Matrix C depends on the values of delta_one and delta_two, which in turn are calculated using
 "delta_one = i*(delta_max-delta_min)/num_points + delta_min" and likewise using j for delta_two. Once all job_addresses are complete, the empty r_vals grid is filled and a plot
