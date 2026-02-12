@@ -494,8 +494,9 @@ if __name__ == "__main__":
         np.savetxt("RMS_vals_mpi.csv", r_vals, delimiter=',')
         if calculate_pairwise_vals:
             for k in range(num_spins):
-                np.savetxt("Pairwise_RMS_{}.csv".format[k], r_pair_vals[k], delemiter=',')
-                np.savetxt("Pairwise_phi_{}.csv".format[k], phi_pair_vals[k], delemiter=',')
+                np.savetxt("Pairwise_RMS_{}.csv".format[k], r_pair_vals[k, :, :], delemiter=',')
+                np.savetxt("Pairwise_phi_{}.csv".format[k], phi_pair_vals[k, :, :], delemiter=',')
+
 
 
 
