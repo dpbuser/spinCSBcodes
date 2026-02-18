@@ -169,13 +169,13 @@ if __name__ == "__main__":
     times = np.arange(0, t_final, delta_t) # List of times at which samples will be taken
     cut_time = 20 # A cut-off which excludes all data taken before this time
     cut_ind = int(cut_time/delta_t)
-    epsilon = 0.5 # Regularization. epsilon = 0 corresponds to no regularization
+    epsilon = 0.001 # Regularization. epsilon = 0 corresponds to no regularization
     p = 1 # An overall prefactor which multiplies the noise terms. p = 1 for all results in the paper and supplement
     fluctuation_tolerance = 1e-5 # Error threshold on the calculated r values. If r goes below the fluctuation_tolerance,
                                  # then the calculation at the current data point will cease.
     r_vals_output = "grid_vals_{}.out".format(spin) # Name of the output file to which values of r_vals_output will be printed
 
-    calculate_pairwise_vals = False # Option to calculate the additional pairwise vals in Fig.
+    calculate_pairwise_vals = True # Option to calculate the additional pairwise vals in Fig.
 
     delta_max = 2 * coupling_strength
     delta_min = -2 * coupling_strength
@@ -359,30 +359,30 @@ if __name__ == "__main__":
         f = []
 
         # The first three are the real components Re(\mu_1), Re(\mu_2), Re(\mu_3)
-        for k in range(num_spins):
-            f.append(mu_x(y, k, num_spins, omega, gamma_g_mod, gamma_d, spin, coupling_matrix, epsilon))
+        # for k in range(num_spins):
+        #     f.append(mu_x(y, k, num_spins, omega, gamma_g_mod, gamma_d, spin, coupling_matrix, epsilon))
         # The final three are the imaginary components Im(\mu_1), Im(\mu_2), Im(\mu_3)
-        for k in range(num_spins):
-            f.append(mu_y(y, k, num_spins, omega, gamma_g_mod, gamma_d, spin, coupling_matrix, epsilon))
+        # for k in range(num_spins):
+        #     f.append(mu_y(y, k, num_spins, omega, gamma_g_mod, gamma_d, spin, coupling_matrix, epsilon))
 
         # Uncomment the block below if you wish to take the classical limit as spin -> infinity instead of the
         # Semiclassical functions. These correspond to Eqs. S4a and S4b under a coordinate change when epsilon = 0.
 
-        # for k in range(num_spins):
-        #     f.append(mu_x_classical(y, k, num_spins, omega, gamma_g, gamma_d, coupling_matrix, epsilon))
-        # for k in range(num_spins):
-        #     f.append(mu_y_classical(y, k, num_spins, omega, gamma_g, gamma_d, coupling_matrix, epsilon))
+        for k in range(num_spins):
+            f.append(mu_x_classical(y, k, num_spins, omega, gamma_g, gamma_d, coupling_matrix, epsilon))
+        for k in range(num_spins):
+            f.append(mu_y_classical(y, k, num_spins, omega, gamma_g, gamma_d, coupling_matrix, epsilon))
 
         # The function g gives the noise terms from Eq. 8c. Note that the real and imaginary components are the same.
-        g = [
-            p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
-            p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
-            p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin)),
-            p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
-            p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
-            p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin))]
+        # g = [
+        #     p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
+        #     p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
+        #     p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin)),
+        #     p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
+        #     p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
+        #     p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin))]
 
-        # g = [0, 0, 0, 0, 0, 0]
+        g = [0, 0, 0, 0, 0, 0]
 
         # Compile the C code and begin the simulation
         SDE = jitcsde(f, g)
@@ -423,8 +423,8 @@ if __name__ == "__main__":
                         curr_pair.pop(k)
                         mod_squared_n = data[curr_pair[0]] * data[curr_pair[0]] + data[curr_pair[0] + num_spins] * data[curr_pair[0] + num_spins]
                         mod_squared_m = data[curr_pair[1]] * data[curr_pair[1]] + data[curr_pair[1] + num_spins] * data[curr_pair[1] + num_spins]
-                        r_pair_sums[k] += 0.5 - 2 * (4 * (data[0] * data[1] + data[0 + num_spins] * data[1 + num_spins]) + (
-                                        1 - mod_squared_n) * (1 - mod_squared_m)) / ((1 + mod_squared_n) * (1 + mod_squared_m) * 4)
+                        r_pair = 0.5 - 2 * (4 * (data[curr_pair[0]] * data[curr_pair[1]] + data[curr_pair[0] + num_spins] * data[curr_pair[1] + num_spins])
+                                            + (1 - mod_squared_n) * (1 - mod_squared_m)) / ((1 + mod_squared_n) * (1 + mod_squared_m) * 4)
 
                         phi_sums[k] += np.abs(np.arctan2(data[curr_pair[0]], data[curr_pair[0] + num_spins]) - np.arctan2(data[curr_pair[1]], data[curr_pair[1] + num_spins]))
 
@@ -451,16 +451,24 @@ if __name__ == "__main__":
     gather_arr = None
     gather_pair_arr = None
     gather_phi_arr = None
+    temp_arr1 = None
+    temp_arr2 = None
     if rank==0:
         gather_arr = np.zeros(total_job_size)
         if calculate_pairwise_vals:
             gather_pair_arr = np.zeros((num_spins, total_job_size))
             gather_phi_arr = np.zeros((num_spins, total_job_size))
+            temp_arr1 = np.zeros(len(gather_pair_arr[k, :]))
+            temp_arr2 = np.zeros(len(gather_phi_arr[k, :]))
     comm.Gatherv(local_vals, gather_arr, root=0)
     if calculate_pairwise_vals:
         for k in range(num_spins):
-            comm.Gatherv(local_r_pairs[k], gather_pair_arr[k], root=0)
-            comm.Gatherv(local_phi_pairs[k], gather_phi_arr[k], root=0)
+            comm.Gatherv(local_r_pairs[k], temp_arr1, root=0)
+            comm.Gatherv(local_phi_pairs[k], temp_arr2, root=0)
+            if rank==0:
+                for l in range(len(temp_arr1)):
+                    gather_pair_arr[k, l] = temp_arr1[l]
+                    gather_phi_arr[k, l] = temp_arr2[l]
 ##################################################################################################
 
     # Rank 0 must now organize all data into the 2D array r_vals.
@@ -494,9 +502,8 @@ if __name__ == "__main__":
         np.savetxt("RMS_vals_mpi.csv", r_vals, delimiter=',')
         if calculate_pairwise_vals:
             for k in range(num_spins):
-                np.savetxt("Pairwise_RMS_{}.csv".format[k], r_pair_vals[k, :, :], delemiter=',')
-                np.savetxt("Pairwise_phi_{}.csv".format[k], phi_pair_vals[k, :, :], delemiter=',')
-
+                np.savetxt("Pairwise_RMS_{}.csv".format(k), r_pair_vals[k, :, :], delimiter=',')
+                np.savetxt("Pairwise_phi_{}.csv".format(k), phi_pair_vals[k, :, :], delimiter=',')
 
 
 
