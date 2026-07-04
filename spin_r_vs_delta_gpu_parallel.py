@@ -89,6 +89,7 @@ def construct_spin_network_gen_coupling(spin, omega_list, coupling_matrix, dampi
 
         # Create the raising operator for the ith spin
         plus_i = tensor([qeye(dims)] * i + [s_plus] + [qeye(dims)] * (num_oscillators - i - 1))
+        total_ham -= 0.5j * coupling_anti_herm[i, i] * plus_i.dag() * plus_i
         for j in range(i + 1, num_oscillators):
             # Add the hamiltonian portion of the coupling between spins i and j in Eq. S2C to total_ham
             minus_i_plus_j = tensor(
