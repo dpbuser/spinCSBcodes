@@ -16,7 +16,7 @@ in scipy sparse matrix format to use later in pairwise_quantum_plotter.py.
 The scipt semiclassical_spin_stochastic.py uses the stochastic differential equation defined in Eq. 8 in the main text to approximate the exact quantum dynamics of the master
 equation in Eq. 4 and give the data for Figure 1b. Similar to spin_r_vs_delta_gpu_parallel.py, this script also will fill an 100x100 r_val grid. This time however,
 the parallelzation is done by mpi instead of python. This is to allow multi-node computing if used on a large cluster. To run the script, one will need to use the command
-"mpiexec -n NUMBER_OF_PROCESSES python semiclassical_spin_stochastic.py". This script also has the option to calculate the quantities fond in Fig. INSERT which can be toggled with
+"mpiexec -n NUMBER_OF_PROCESSES python semiclassical_spin_stochastic.py". This script also has the option to calculate the quantities fond in Fig. 3 which can be toggled with
 the boolean variable calculate_pairwise_vals. All quantities will be saved to csv files to be plotted separately at the end of the script.
 
 Finally, the script pairwise_quantum_plotter.py takes the .npz files containing the density matricies from spin_r_vs_delta_gpu_parallel.py to generate the data and create the
