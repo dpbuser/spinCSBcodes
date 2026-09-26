@@ -1,4 +1,4 @@
-This repository contains the scripts used to generate the main results in Figures 2 and 3 in the paper "Quantum Manifestations of Converse Symmetry Breaking".
+This repository contains the scripts used to generate the main results in Figures 2 and 3 in the paper "Quantum Manifestation of Converse Symmetry Breaking".
 
 The data for Figure 1a was produced using spin_r_vs_delta_gpu_parallel.py. To run this one needs an Nvidia GPU that supports the cudatoolkit package. If one wishes to create
 a new environment, the following command should install all dependencies: "conda create -n csb_env python numpy matplotlib scipy mpi4py numba cudatoolkit cupy". You will also need to
@@ -19,7 +19,7 @@ the parallelzation is done by mpi instead of python. This is to allow multi-node
 "mpiexec -n NUMBER_OF_PROCESSES python semiclassical_spin_stochastic.py". This script also has the option to calculate the quantities fond in Fig. 3 which can be toggled with
 the boolean variable calculate_pairwise_vals. All quantities will be saved to csv files to be plotted separately at the end of the script.
 
-Finally, the script pairwise_quantum_plotter.py takes the .npz files containing the density matricies from spin_r_vs_delta_gpu_parallel.py to generate the data and create the
+Finally, the script pairwise_quantum_plotter.py takes the .npz files containing the density matrices from spin_r_vs_delta_gpu_parallel.py to generate the data and create the
 plots shown in Figure 3. You will want all the npz files in the same folder, and have them named "steady_state_{}_{}_{}.npz" where the brackets are filled in with the spin
 quantum number, the row, and the column of each steady state in the 100x100 grid. The script will then loop through the .npz files and calculate the pairwise r values as well
 as the relative phase \Phi_{ij} defined in Eq. 9. Once all of these quantities have been found, a plot in the style of Fig. 3 will be generated.
