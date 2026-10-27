@@ -374,15 +374,15 @@ if __name__ == "__main__":
             f.append(mu_y_classical(y, k, num_spins, omega, gamma_g, gamma_d, coupling_matrix, epsilon))
 
         # The function g gives the noise terms from Eq. 8c. Note that the real and imaginary components are the same.
-        # g = [
-        #     p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
-        #     p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
-        #     p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin)),
-        #     p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
-        #     p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
-        #     p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin))]
+        g = [
+            p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
+            p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
+            p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin)),
+            p * symengine.sqrt(mat_diff(y(0), y(3), gamma_g, gamma_d, spin)),
+            p * symengine.sqrt(mat_diff(y(1), y(4), gamma_g, gamma_d, spin)),
+            p * symengine.sqrt(mat_diff(y(2), y(5), gamma_g, gamma_d, spin))]
 
-        g = [0, 0, 0, 0, 0, 0]
+        # g = [0, 0, 0, 0, 0, 0]
 
         # Compile the C code and begin the simulation
         SDE = jitcsde(f, g)
